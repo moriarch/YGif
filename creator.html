@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./style.css" />
+    <title>Создаем</title>
+    <script src="./gifshot.min.js"></script>
+  </head>
+  <body style="padding: 40px; display: flex; flex-direction: column;">
+    <div class="line">
+      <label for="images" class="btn">Выбрать файлы</label>
+      <input id="images" type="file" multiple />
+      <input
+        type="text"
+        id="seconds"
+        placeholder="Время смены кадров в секундах"
+      />
+    </div>
+    <div class="line" id="imagesCre"></div>
+    <div class="line">
+      <div class="btn" id="gomake">Создать Gif</div>
+    </div>
+    <div class="result"></div>
+    <input type="file" nwsaveas="filename.gif" id="chossePath" />
+    <script>
+      var fs = require("fs");
+      opendlg = document.querySelector("#images");
+      opendlg.addEventListener("change", function (e) {
+        var files = e.target.value;
+        files = files.split(";");
+        if (files[0] != "") {
+          appendFiles(files);
+        } else {
+          console.log("empty");
+        }
+      });
+      function appendFiles(files) {
+        console.log(files);
+        files.forEach((element) => {
+          var img = document.createElement("img");
+          img.src = element;
+          img.addEventListener("click", function (event) {
+            /*openWindows(event.target);*/
+          });
+
+          document.querySelector("#imagesCre").appendChild(img);
+        });
+      }
+      function createGif(files, width, height) {
+        var duration = parseInt(document.querySelector("#seconds").value);
+        duration = duration ? duration : 3;
+        console.log(duration);
+        gifshot.createGIF(
+          {
+            images: files,
+            gifWidth: width,
+            gifHeight: height,
+            frameDuration: duration,
+          },
+          function (obj) {
+            if (!obj.error) {
+              var image = obj.image,
+                animatedImage = document.createElement("img");
+              animatedImage.src = image;
+
+              saveFile(obj.image);
+              document.querySelector(".result").appendChild(animatedImage);
+            }
+          }
+        );
+        console.log(files);
+      }
+      document.querySelector("#gomake").onclick = function () {
+        var img = document.querySelectorAll("#imagesCre img");
+
+        var width = img[0].naturalWidth;
+        var height = img[0].naturalHeight;
+        var res = [];
+        img.forEach((element) => {
+          res.push(element.src);
+        });
+        createGif(res, width, height);
+      };
+
+      function saveFile(file) {
+        function chooseFile(name) {
+          var chooser = document.querySelector(name);
+          chooser.addEventListener(
+            "change",
+            function (evt) {
+              file = file.replace("data:image/gif;base64,", "");
+              console.log(file);
+              var fs = require("fs");
+              // a base64 string of a gif image
+
+              // // The absolute path of the new file with its name
+              var filepath = this.value;
+
+              // Save with a buffer as content from a base64 image
+              fs.writeFile(filepath, new Buffer(file, "base64"), (err) => {
+                if (err) throw err;
+
+                console.log("The file was succesfully saved!");
+              });
+            },
+            false
+          );
+
+          chooser.click();
+        }
+        chooseFile("#chossePath");
+      }
+    </script>
+  </body>
+</html>

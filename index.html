@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./style.css" />
+    <title>YGif</title>
+    <script>
+      var nw = require("nw.gui");
+      var win = nw.Window.get();
+      win.isMaximized = false;
+    </script>
+  </head>
+  <body style="-webkit-app-region: drag; background-color: rgba(0, 0, 0, 0);">
+    <header>
+      <span id="windowControlMinimize"></span>
+      <span id="windowControlMaximize"></span>
+      <span id="windowControlClose"></span>
+    </header>
+    <aside>
+      <h1>YGif</h1>
+      <label for="gifoper" class="btn">Открыть файлы</label>
+      <input id="gifoper" type="file" multiple />
+      <div class="btn" id="creator">Cоздать Gif</div>
+    </aside>
+    <div class="right"></div>
+    <script>
+      document.getElementById("windowControlMinimize").onclick = function () {
+        win.minimize();
+      };
+      document.getElementById("windowControlClose").onclick = function () {
+        win.close();
+      };
+      document.getElementById("windowControlMaximize").onclick = function () {
+        if (win.isMaximized) win.unmaximize();
+        else win.maximize();
+      };
+      win.on("maximize", function () {
+        win.isMaximized = true;
+      });
+      win.on("unmaximize", function () {
+        win.isMaximized = false;
+      });
+      document.getElementById("creator").onclick = function () {
+        var viewer = nw.Window.open(
+          "creator.html",
+          {
+            new_instance: true,
+            position: "center",
+            frame: true,
+          },
+          function (new_win) {
+            new_win.once("loaded", function () {
+              console.log(12324);
+            });
+          }
+        );
+      };
+    </script>
+    <script>
+      opendlg = document.querySelector("#gifoper");
+      opendlg.addEventListener("change", function (e) {
+        var files = e.target.value;
+        files = files.split(";");
+        if (files[0] != "") {
+          appendFiles(files);
+        } else {
+          console.log("empty");
+        }
+      });
+
+      function appendFiles(files) {
+        console.log(files);
+        let container = document.querySelector(".right");
+        files.forEach((element) => {
+          var img = document.createElement("img");
+          img.src = element;
+          img.addEventListener("click", function (event) {
+            openWindows(event.target);
+          });
+          var name = element.split("\\");
+          name = name[name.length - 1];
+          console.log(name);
+          var newNode = document.createElement("div");
+          newNode.innerHTML = name;
+          container.appendChild(img);
+          container.appendChild(newNode);
+        });
+      }
+      function openWindows(el) {
+        var width = el.naturalWidth;
+        var height = el.naturalHeight;
+        var viewer = nw.Window.open(
+          "viewer.html?" + el.src,
+          {
+            new_instance: true,
+            position: "center",
+            height: height,
+            width: width,
+            frame: false,
+          },
+          function (new_win) {
+            new_win.once("loaded", function () {
+              console.log(12324);
+            });
+          }
+        );
+      }
+    </script>
+  </body>
+</html>

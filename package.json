@@ -1,0 +1,17 @@
+{
+  "name": "ygif",
+  "main": "index.html",
+  "window": {
+    "title": "YGif",
+    "icon": "link.png",
+    "toolbar": true,
+    "frame": false,   
+    "position": "mouse",
+    "min_width": 400,
+    "min_height": 200,
+    "transparent": true
+},
+"developer": {
+    "showDevToolsOnStartup": true
+}
+}
